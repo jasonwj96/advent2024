@@ -1,8 +1,31 @@
 [package]
-name = "adventofcode2024"
-version = "1.0.0"
+name = "advent_of_code"
+version = "0.11.0"
+authors = ["Jason Wedderburn"]
 edition = "2021"
+default-run = "advent_of_code"
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+doctest = false
+
+[profile.dhat]
+inherits = "release"
+debug = 1
+
+[features]
+dhat-heap = ["dhat"]
+today = ["chrono"]
+test_lib = []
 
 [dependencies]
-nalgebra = "0.33.1"
-rand = "0.9.0-alpha.2"
+
+# Template dependencies
+chrono = { version = "0.4.38", optional = true }
+dhat = { version = "0.3.3", optional = true }
+pico-args = "0.5.0"
+tinyjson = "2.5.1"
+
+# Solution dependencies
+itertools = "0.13.0"

@@ -1,49 +1,144 @@
-/*
+use advent_of_code::template::commands::{all, download, read, scaffold, solve, time};
+use args::{parse, AppArguments};
 
---- Day 1: Trebuchet?! ---
+#[cfg(feature = "today")]
+use advent_of_code::template::Day;
+#[cfg(feature = "today")]
+use std::process;
 
-Something is wrong with global snow production, and you've been selected to take a look.
-The Elves have even given you a map; on it, they've used stars to mark the top fifty locations that
-are likely to be having problems.
+mod args {
+    use advent_of_code::template::Day;
+    use std::process;
 
-You've been doing this long enough to know that to restore snow operations, you need to check all fifty
-stars by December 25th.
+    pub enum AppArguments {
+        Download {
+            day: Day,
+        },
+        Read {
+            day: Day,
+        },
+        Scaffold {
+            day: Day,
+            download: bool,
+            overwrite: bool,
+        },
+        Solve {
+            day: Day,
+            release: bool,
+            dhat: bool,
+            submit: Option<u8>,
+        },
+        All {
+            release: bool,
+        },
+        Time {
+            all: bool,
+            day: Option<Day>,
+            store: bool,
+        },
+        #[cfg(feature = "today")]
+        Today,
+    }
 
-Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar;
-the second puzzle is unlocked when you complete the first. Each puzzle grants one star. Good luck!
+    pub fn parse() -> Result<AppArguments, Box<dyn std::error::Error>> {
+        let mut args = pico_args::Arguments::from_env();
 
-You try to ask why they can't just use a weather machine ("not powerful enough") and where they're even
-sending you ("the sky") and why your map looks mostly blank ("you sure ask a lot of questions") and
-hang on did you just say the sky ("of course, where do you think snow comes from") when you realize
-that the Elves are already loading you into a trebuchet ("please hold still, we need to strap you in").
+        let app_args = match args.subcommand()?.as_deref() {
+            Some("all") => AppArguments::All {
+                release: args.contains("--release"),
+            },
+            Some("time") => {
+                let all = args.contains("--all");
+                let store = args.contains("--store");
 
-As they're making the final adjustments, they discover that their calibration document (your puzzle input)
- has been amended by a very young Elf who was apparently just excited to show off her art skills.
- Consequently, the Elves are having trouble reading the values on the document.
+                AppArguments::Time {
+                    all,
+                    day: args.opt_free_from_str()?,
+                    store,
+                }
+            }
+            Some("download") => AppArguments::Download {
+                day: args.free_from_str()?,
+            },
+            Some("read") => AppArguments::Read {
+                day: args.free_from_str()?,
+            },
+            Some("scaffold") => AppArguments::Scaffold {
+                day: args.free_from_str()?,
+                download: args.contains("--download"),
+                overwrite: args.contains("--overwrite"),
+            },
+            Some("solve") => AppArguments::Solve {
+                day: args.free_from_str()?,
+                release: args.contains("--release"),
+                submit: args.opt_value_from_str("--submit")?,
+                dhat: args.contains("--dhat"),
+            },
+            #[cfg(feature = "today")]
+            Some("today") => AppArguments::Today,
+            Some(x) => {
+                eprintln!("Unknown command: {x}");
+                process::exit(1);
+            }
+            None => {
+                eprintln!("No command specified.");
+                process::exit(1);
+            }
+        };
 
-The newly-improved calibration document consists of lines of text; each line originally contained a
-specific calibration value that the Elves now need to recover. On each line, the calibration value
-can be found by combining the first digit and the last digit (in that order) to form a single two-digit number.
+        let remaining = args.finish();
+        if !remaining.is_empty() {
+            eprintln!("Warning: unknown argument(s): {remaining:?}.");
+        }
 
-For example:
-
-1abc2
-pqr3stu8vwx
-a1b2c3d4e5f
-treb7uchet
-
-In this example, the calibration values of these four lines are 12, 38, 15, and 77.
-Adding these together produces 142.
-
-Consider your entire calibration document. What is the sum of all of the calibration values?
-
-Your puzzle answer was 54239.
-*/
-
-mod solutions;
+        Ok(app_args)
+    }
+}
 
 fn main() {
-    println!("Hello world");
-
-    solutions::solution1::part1();
+    match parse() {
+        Err(err) => {
+            eprintln!("Error: {err}");
+            std::process::exit(1);
+        }
+        Ok(args) => match args {
+            AppArguments::All { release } => all::handle(release),
+            AppArguments::Time { day, all, store } => time::handle(day, all, store),
+            AppArguments::Download { day } => download::handle(day),
+            AppArguments::Read { day } => read::handle(day),
+            AppArguments::Scaffold {
+                day,
+                download,
+                overwrite,
+            } => {
+                scaffold::handle(day, overwrite);
+                if download {
+                    download::handle(day);
+                }
+            }
+            AppArguments::Solve {
+                day,
+                release,
+                dhat,
+                submit,
+            } => solve::handle(day, release, dhat, submit),
+            #[cfg(feature = "today")]
+            AppArguments::Today => {
+                match Day::today() {
+                    Some(day) => {
+                        scaffold::handle(day, false);
+                        download::handle(day);
+                        read::handle(day)
+                    }
+                    None => {
+                        eprintln!(
+                            "`today` command can only be run between the 1st and \
+                            the 25th of december. Please use `scaffold` with a specific day."
+                        );
+                        process::exit(1)
+                    }
+                };
+            }
+        },
+    };
 }
