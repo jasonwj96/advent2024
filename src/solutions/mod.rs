@@ -1,1 +1,1 @@
-pub mod solution1;
+pub mod p01;
