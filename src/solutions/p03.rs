@@ -67,6 +67,7 @@ use std::sync::LazyLock;
 static RE_MUL: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"mul\((\d+),(\d+)\)").unwrap());
 static RE_WITH_DO_DONT: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"mul\(\d+,\d+\)|do\(\)|don't\(\)").unwrap());
+
 fn multiplication_result(input: &str) -> u64 {
     RE_MUL
         .captures_iter(input)
