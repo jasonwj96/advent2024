@@ -47,6 +47,31 @@ Analyze the unusual data from the engineers. How many reports are safe?
 
 */
 
+pub fn is_valid(input: &Vec<i32>) -> bool {
+    let mut is_safe: bool = false;
+
+    if input.len() > 1 {
+        let first: i32 = input[0];
+        let second: i32 = input[1];
+
+        // Ascending
+        if first < second {
+            is_safe = input
+                .windows(2)
+                .all(|pair| (pair[0] - pair[1]).abs() <= 3 && pair[0] < pair[1]);
+        }
+
+        // Descending
+        if first > second {
+            is_safe = input
+                .windows(2)
+                .all(|pair| (pair[0] - pair[1]).abs() <= 3 && pair[0] > pair[1]);
+        }
+    }
+
+    is_safe
+}
+
 pub fn analyze(input: &str) -> u32 {
     let mut safe_reports: u32 = 0;
 
@@ -56,38 +81,54 @@ pub fn analyze(input: &str) -> u32 {
             .filter_map(|s| s.parse::<i32>().ok())
             .collect();
 
-        if numbers.len() > 1 {
-            let first: i32 = numbers[0];
-            let second: i32 = numbers[1];
-            let mut is_safe: bool = false;
-
-            // Ascending
-            if first < second {
-                is_safe = numbers
-                    .windows(2)
-                    .all(|pair| (pair[0] - pair[1]).abs() <= 3 && pair[0] < pair[1]);
-            }
-
-            // Descending
-            if first > second {
-                is_safe = numbers
-                    .windows(2)
-                    .all(|pair| (pair[0] - pair[1]).abs() <= 3 && pair[0] > pair[1]);
-            }
-
-            if is_safe {
-                safe_reports += 1;
-            };
-        }
+        if is_valid(&numbers) {
+            safe_reports += 1;
+        };
     }
 
     safe_reports
 }
+
+pub fn analyze_with_damping(input: &str) -> u32 {
+    let mut safe_reports: u32 = 0;
+    let mut is_safe: bool;
+
+    for line in input.lines() {
+        let mut dampener: u32 = 0;
+
+        let numbers: Vec<i32> = line
+            .split_whitespace()
+            .filter_map(|s| s.parse::<i32>().ok())
+            .collect();
+
+        for idx in 0..numbers.len() {
+            let filtered: Vec<i32> = numbers
+                .iter()
+                .enumerate()
+                .filter(|(i, _)| *i != idx)
+                .map(|(_, &n)| n)
+                .collect();
+
+            if is_valid(&filtered) {
+                dampener += 1;
+            }
+        }
+
+        is_safe = is_valid(&numbers);
+
+        if is_safe || (!is_safe && dampener > 0){
+            safe_reports += 1;
+        };
+    }
+
+    safe_reports
+}
+
 
 pub fn part1() -> u32 {
     analyze(include_str!("../inputs/02.txt"))
 }
 
 pub fn part2() -> u32 {
-    0
+    analyze_with_damping(include_str!("../inputs/02.txt"))
 }
