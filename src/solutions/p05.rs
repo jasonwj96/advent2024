@@ -94,57 +94,44 @@ Determine which updates are already in the correct order. What do you get if you
 page number from those correctly-ordered updates?
 
 */
-use std::num::ParseIntError;
 use itertools::enumerate;
+use std::num::ParseIntError;
+
+fn process(input: &str, delimiter: &str) -> Vec<Vec<i32>> {
+    input.trim().lines()
+         .map(|line| {
+             line.split(delimiter)
+                 .map(|num| num.parse::<i32>())
+                 .collect::<Result<Vec<i32>, ParseIntError>>()
+                 .unwrap_or_else(|_| vec![])
+         })
+         .collect()
+}
+
+fn print_grid(grid: Vec<Vec<i32>>) {
+    for line in grid {
+        print!("[");
+        for (i, value) in enumerate(&line) {
+            print!("{}", value);
+            if i < line.len() - 1 {
+                print!(",");
+            }
+        }
+        println!("]")
+    }
+}
 
 pub fn part1() -> u32 {
     let (a, b) = include_str!("../tests/05.txt")
         .split_once("\n\r")
         .unwrap();
 
-    let splitrules: Vec<Vec<i32>> = a.trim().lines()
-                                     .map(|line| {
-                                         line.split('|')                      // Split each line by '|'
-                                             .map(|num| num.parse::<i32>())  // Parse each part as i32
-                                             .collect::<Result<Vec<i32>, ParseIntError>>() // Collect into a
-                                             // Vec<i32>, handling errors
-                                             .unwrap_or_else(|_| vec![])     // Handle parse errors (optional)
-                                     })
-                                     .collect();
+    let rules: Vec<Vec<i32>> = process(a, "|");
+    let updates: Vec<Vec<i32>> = process(b, ",");
 
-    let splitupdates: Vec<Vec<i32>> = b.trim().lines()
-                                       .map(|line| {
-                                           line.split(',')                      // Split each line by '|'
-                                               .map(|num| num.parse::<i32>())  // Parse each part as i32
-                                               .collect::<Result<Vec<i32>, ParseIntError>>() // Collect into a
-                                               // Vec<i32>, handling errors
-                                               .unwrap_or_else(|_| vec![])     // Handle parse errors (optional)
-                                       })
-                                       .collect();
-
-    for line in splitrules {
-        print!("[");
-        for (i, value) in enumerate(&line) {
-            print!("{}", value);
-            if i < line.len() - 1 {
-                print!(",");
-            }
-        }
-        println!("]")
-    }
-
+    print_grid(rules);
     println!("\n\n");
-
-    for line in splitupdates {
-        print!("[");
-        for (i, value) in enumerate(&line) {
-            print!("{}", value);
-            if i < line.len() - 1 {
-                print!(",");
-            }
-        }
-        println!("]")
-    }
+    print_grid(updates);
 
     0
 }
