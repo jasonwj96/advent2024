@@ -59,7 +59,7 @@ pub fn parse(input: &str) -> Grid<u8> {
 }
 
 pub fn part1() -> u32 {
-    let mut grid: Grid<u8> = parse(include_str!("../inputs/04.txt"));
+    let grid: Grid<u8> = parse(include_str!("../inputs/04.txt"));
     let mut result = 0;
 
     for x in 0..grid.width {
@@ -82,7 +82,7 @@ pub fn part1() -> u32 {
 
 pub fn part2() -> u32 {
     let mut result = 0;
-    let mut grid: Grid<u8> = parse(include_str!("../inputs/04.txt"));
+    let grid: Grid<u8> = parse(include_str!("../inputs/04.txt"));
 
     for x in 1..grid.width - 1 {
         for y in 1..grid.height - 1 {

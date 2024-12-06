@@ -28,12 +28,10 @@
 use std::hash::{Hash, Hasher};
 use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
-pub const ORIGIN: Point = Point::new(0, 0);
 pub const UP: Point = Point::new(0, -1);
 pub const DOWN: Point = Point::new(0, 1);
 pub const LEFT: Point = Point::new(-1, 0);
 pub const RIGHT: Point = Point::new(1, 0);
-pub const ORTHOGONAL: [Point; 4] = [UP, DOWN, LEFT, RIGHT];
 // Left to right and top to bottom.
 pub const DIAGONAL: [Point; 8] = [
     Point::new(-1, -1),
@@ -59,29 +57,6 @@ impl Point {
         Point { x, y }
     }
 
-    #[inline]
-    #[must_use]
-    pub fn clockwise(self) -> Self {
-        Point::new(-self.y, self.x)
-    }
-
-    #[inline]
-    #[must_use]
-    pub fn counter_clockwise(self) -> Self {
-        Point::new(self.y, -self.x)
-    }
-
-    #[inline]
-    #[must_use]
-    pub fn manhattan(self, other: Self) -> i32 {
-        (self.x - other.x).abs() + (self.y - other.y).abs()
-    }
-
-    #[inline]
-    #[must_use]
-    pub fn signum(self, other: Self) -> Self {
-        Point::new((self.x - other.x).signum(), (self.y - other.y).signum())
-    }
 }
 
 impl From<u8> for Point {

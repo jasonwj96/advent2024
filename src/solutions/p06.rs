@@ -109,43 +109,34 @@ before leaving the mapped area?
 */
 use itertools::enumerate;
 use std::fs;
-use std::io::BufRead;
-
-#[derive(Default)]
-struct Guard {
-    position: (u32, u32)
-}
-
-impl Guard {
-    fn move_position(&mut self, x: u32, y: u32) {
-        self.position = (self.position.0 + x, self.position.1 + y);
-    }
-}
 
 pub fn part1() -> i32 {
     let content = fs::read_to_string("src/tests/06.txt").unwrap();
-    let mut entity: Guard = Default::default();
+    let mut current: (u32, u32) = (0, 0);
+    let sprites: Vec<char> = vec!['<', '^', '>', 'v'];
+    let directions: Vec<(i32, i32)> = vec![(-1, 0), (0, -1), (0, 1), (1, 0)];
+    let mut d: usize = 0;
 
     for (i, line) in enumerate(content.lines()) {
         for (j, c) in enumerate(line.chars().collect::<Vec<char>>()) {
-            let directions: Vec<char> = vec!['<', '>', '^', 'v'];
-
-            if directions.contains(&c) {
-                entity.position = (i as u32, j as u32);
-                println!("({},{})", entity.position.0, entity.position.1);
+            if sprites.contains(&c) {
+                current = (i as u32, j as u32);
+                println!("Current pos: ({},{})", current.0, current.1);
 
                 match &c {
-                    '<' => {}
-                    '>' => {}
-                    '^' => {}
-                    'v' => {}
+                    '<' => d = 0,
+                    '^' => d = 1,
+                    '>' => d = 2,
+                    'v' => d = 3,
                     &_ => {}
                 }
+
+                println!("Current direction: ({},{})", directions[d].0, directions[d].1);
             }
         }
     }
 
-    for (i, line) in enumerate(content.lines()) {
+    for (_, line) in enumerate(content.lines()) {
         println!("{}", line);
     }
 
