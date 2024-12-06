@@ -12,4 +12,6 @@ fn main() {
     println!("Puzzle 4, Part 2: {}", solutions::p04::part2());
     println!("Puzzle 5, Part 1: {}", solutions::p05::part1());
     println!("Puzzle 5, Part 2: {}", solutions::p05::part2());
+    println!("Puzzle 6, Part 1: {}", solutions::p06::part1());
+    println!("Puzzle 6, Part 2: {}", solutions::p06::part2());
 }
