@@ -148,6 +148,7 @@ struct Grid {
     guard_starting_position: usize,
 }
 
+
 impl Grid {
     fn build(input: &str) -> Self {
         let mut rows = 0;
