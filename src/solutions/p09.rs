@@ -86,17 +86,27 @@ use std::path::Path;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
     where
-        P: AsRef<Path>,
+        P: AsRef<Path>
 {
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
 
+pub fn parse(input: io::Result<io::Lines<io::BufReader<File>>>) -> Vec<usize> {
+    match input {
+        Ok(input) => {
+            for line in input.flatten() {
+                println!("{}", line);
+            }
+        } Err(e) => eprintln!("Error parsing the input. {}", e)
+    }
+
+    vec![0]
+}
+
 pub fn part1() -> i32 {
     if let Ok(lines) = read_lines("src/tests/09.txt") {
-        for line in lines.flatten() {
-            println!("{}", line);
-        }
+        parse(Ok(lines));
     }
 
     0
