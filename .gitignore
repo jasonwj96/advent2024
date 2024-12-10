@@ -1,3 +1,11 @@
-/target
-.idea
+# Cargo
+target/
 Cargo.lock
+
+# macOS
+.DS_Store
+
+# Don't commit input files
+input
+
+.idea
