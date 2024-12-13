@@ -20,7 +20,7 @@ fn main() {
 
     // Filter solutions
     let solutions = empty()
-        .chain(year2015())
+       /* .chain(year2015())
         .chain(year2016())
         .chain(year2017())
         .chain(year2018())
@@ -28,7 +28,7 @@ fn main() {
         .chain(year2020())
         .chain(year2021())
         .chain(year2022())
-        .chain(year2023())
+        .chain(year2023())*/
         .chain(year2024())
         .filter(|solution| year.is_none_or(|y: u32| y == solution.year))
         .filter(|solution| day.is_none_or(|d: u32| d == solution.day));
