@@ -14,7 +14,7 @@ solving 450 stars in less than 1 second.
 ## Quickstart
 
 <details>
-<summary>Show details</summary><p/>
+<summary>Show details</summary><p></p>
 
 **Input**
 
