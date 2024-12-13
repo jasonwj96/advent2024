@@ -20,16 +20,15 @@ fn main() {
 
     // Filter solutions
     let solutions = empty()
-        /*        .chain(year2015())
-                .chain(year2016())
-                .chain(year2017())
-                .chain(year2018())
-                .chain(year2019())
-                .chain(year2020())
-                .chain(year2021())
-                .chain(year2022())
-                .chain(year2023())
-          */
+      /*  .chain(year2015())
+        .chain(year2016())
+        .chain(year2017())
+        .chain(year2018())
+        .chain(year2019())
+        .chain(year2020())
+        .chain(year2021())
+        .chain(year2022())
+        .chain(year2023())*/
         .chain(year2024())
         .filter(|solution| year.is_none_or(|y: u32| y == solution.year))
         .filter(|solution| day.is_none_or(|d: u32| d == solution.day));
@@ -366,11 +365,13 @@ fn year2024() -> Vec<Solution> {
         solution!(year2024, day02),
         solution!(year2024, day03),
         solution!(year2024, day04),
-        //solution!(year2024, day05),
+        solution!(year2024, day05),
         solution!(year2024, day06),
         solution!(year2024, day07),
         solution!(year2024, day08),
         solution!(year2024, day09),
         solution!(year2024, day10),
+        solution!(year2024, day11),
+        solution!(year2024, day12),
     ]
 }

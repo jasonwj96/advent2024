@@ -10,7 +10,7 @@ use std::cmp::Ordering::*;
 type Input = (usize, usize);
 
 pub fn parse(input: &str) -> Input {
-    let (prefix, suffix) = input.split_once("\n\r").unwrap();
+    let (prefix, suffix) = input.split_once("\n\n").unwrap();
     let mut order = [[Greater; 100]; 100];
 
     for [from, to] in prefix.iter_unsigned::<usize>().chunk::<2>() {
