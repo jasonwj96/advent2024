@@ -20,7 +20,7 @@ fn main() {
 
     // Filter solutions
     let solutions = empty()
-       /* .chain(year2015())
+        .chain(year2015())
         .chain(year2016())
         .chain(year2017())
         .chain(year2018())
@@ -28,7 +28,7 @@ fn main() {
         .chain(year2020())
         .chain(year2021())
         .chain(year2022())
-        .chain(year2023())*/
+        .chain(year2023())
         .chain(year2024())
         .filter(|solution| year.is_none_or(|y: u32| y == solution.year))
         .filter(|solution| day.is_none_or(|d: u32| d == solution.day));
@@ -43,7 +43,7 @@ fn main() {
             let (part1, part2) = wrapper(data);
             let elapsed = instant.elapsed();
 
-            solved += 1;
+            solved += 2;
             duration += elapsed;
 
             println!("{BOLD}{YELLOW}{year} Day {day:02}{RESET}");
@@ -57,9 +57,11 @@ fn main() {
         }
     }
 
-    // Print totals
-    println!("{BOLD}{RED}Solved: {solved}{RESET}");
-    println!("{BOLD}{GREEN}Duration: {} ms{RESET}", duration.as_millis());
+    // Optionally print totals
+    if args().any(|a| a == "--totals") {
+        println!("{BOLD}{YELLOW}⭐ {solved}{RESET}");
+        println!("{BOLD}{WHITE}🕓 {} ms{RESET}", duration.as_millis());
+    }
 }
 
 struct Solution {
@@ -139,5 +141,6 @@ run!(year2023
 );
 
 run!(year2024
-    day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13
+    day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13,
+    day14, day15, day16
 );
