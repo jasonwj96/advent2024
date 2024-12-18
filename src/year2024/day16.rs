@@ -1,16 +1,20 @@
 //! # Reindeer Maze
 //!
+//! Solves part one and part two simultaneously.
+//!
 //! Part one is a normal [Dijkstra](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
 //! search from start to end.
 //!
-//! Part two we modify the search to check all possible paths. Then we perform a BFS *backwards*
-//! from the end to the finish, using the inverse cost to find all possible paths.
+//! Part two is a a BFS *backwards* from the end to the finish, tracing the cost exactly
+//! to find all possible paths. This reuses the cost information from the Dijkstra without
+//! requiring any extra state keeping for the paths.
 use crate::util::grid::*;
 use crate::util::point::*;
 use std::collections::VecDeque;
 
 type Input = (u32, usize);
 
+/// Clockwise order starting with facing right.
 const DIRECTIONS: [Point; 4] = [RIGHT, DOWN, LEFT, UP];
 
 pub fn parse(input: &str) -> Input {
@@ -18,25 +22,29 @@ pub fn parse(input: &str) -> Input {
     let start = grid.find(b'S').unwrap();
     let end = grid.find(b'E').unwrap();
 
-    // Forwards Dijkstra
-    let mut buckets = vec![Vec::new(); 1001];
+    // Forwards Dijkstra. Since turns are so much more expensive than moving forward, we can
+    // treat this as a glorified BFS using two priority queues. This is much faster than using
+    // an actual min heap.
+    let mut todo_first = VecDeque::new();
+    let mut todo_second = VecDeque::new();
+    // State is `(position, direction)`.
     let mut seen = grid.same_size_with([u32::MAX; 4]);
-    let mut cost = 0;
     let mut lowest = u32::MAX;
 
-    buckets[0].push((start, 0));
+    todo_first.push_back((start, 0, 0));
     seen[start][0] = 0;
 
-    while lowest == u32::MAX {
-        let index = (cost % 1001) as usize;
-
-        while let Some((position, direction)) = buckets[index].pop() {
-            // Find all paths of lowest cost.
+    while !todo_first.is_empty() {
+        while let Some((position, direction, cost)) = todo_first.pop_front() {
+            if cost >= lowest {
+                continue;
+            }
             if position == end {
                 lowest = cost;
-                break;
+                continue;
             }
 
+            // -1.rem_euclid(4) = 3
             let left = (direction + 3) % 4;
             let right = (direction + 1) % 4;
             let next = [
@@ -45,22 +53,27 @@ pub fn parse(input: &str) -> Input {
                 (position, right, cost + 1000),
             ];
 
-            for (next_position, next_direction, next_cost) in next {
+            for tuple @ (next_position, next_direction, next_cost) in next {
                 if grid[next_position] != b'#' && next_cost < seen[next_position][next_direction] {
-                    let index = (next_cost % 1001) as usize;
-                    buckets[index].push((next_position, next_direction));
+                    // Find the next bucket.
+                    if next_direction == direction {
+                        todo_first.push_back(tuple);
+                    } else {
+                        todo_second.push_back(tuple);
+                    }
                     seen[next_position][next_direction] = next_cost;
                 }
             }
         }
 
-        cost += 1;
+        (todo_first, todo_second) = (todo_second, todo_first);
     }
 
     // Backwards BFS
     let mut todo = VecDeque::new();
     let mut path = grid.same_size_with(false);
 
+    // Lowest paths can arrive at end node in multiple directions.
     for direction in 0..4 {
         if seen[end][direction] == lowest {
             todo.push_back((end, direction, lowest));
@@ -69,7 +82,6 @@ pub fn parse(input: &str) -> Input {
 
     while let Some((position, direction, cost)) = todo.pop_front() {
         path[position] = true;
-
         if position == start {
             continue;
         }
@@ -84,8 +96,10 @@ pub fn parse(input: &str) -> Input {
         ];
 
         for (next_position, next_direction, next_cost) in next {
+            // Trace our cost step by step so it will exactly match possible paths.
             if next_cost == seen[next_position][next_direction] {
                 todo.push_back((next_position, next_direction, next_cost));
+                // Set cost back to `u32::MAX` to prevent redundant path explorations.
                 seen[next_position][next_direction] = u32::MAX;
             }
         }
