@@ -31,7 +31,7 @@ use std::mem::swap;
 type Input<'a> = (Grid<u8>, &'a str);
 
 pub fn parse(input: &str) -> Input<'_> {
-    let (prefix, suffix) = input.split_once("\n\r").unwrap();
+    let (prefix, suffix) = input.split_once("\n\n").unwrap();
     let grid = Grid::parse(prefix);
     (grid, suffix)
 }
