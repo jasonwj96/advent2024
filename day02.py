@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def parse(file_path: Path) -> list[tuple[int]]:
+def parse(file_path: Path) -> list[tuple[int, ...]]:
     output: list[tuple[int]] = []
 
     with file_path.open("r") as file:
