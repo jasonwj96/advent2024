@@ -18,7 +18,7 @@ def part1(left: list[int], right: list[int]) -> int:
     left.sort()
     right.sort()
 
-    return sum([abs(a - b) for a, b in zip(left, right)])
+    return sum((abs(a - b) for a, b in zip(left, right)))
 
 
 def part2(left: list[int], right: list[int]) -> int:
